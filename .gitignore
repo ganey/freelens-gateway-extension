@@ -2,8 +2,6 @@
 /out/
 /node_modules/
 *.tgz
-*.lock
-pnpm-lock.yaml
 .idea
 .vscode
 *.d.ts
