@@ -20,6 +20,13 @@ A [Freelens](https://github.com/freelensapp/freelens) extension that provides UI
 
 ## Installation
 
+### From npm
+
+1. Open Freelens
+2. Navigate to **Extensions** (File > Extensions)
+3. Enter `freelens-gateway-extension` in the install input
+4. Click **Install**
+
 ### From Release
 
 1. Download the latest `.tgz` file from the [Releases](https://github.com/ganey/freelens-gateway-extension/releases) page
