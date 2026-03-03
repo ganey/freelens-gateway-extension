@@ -1,0 +1,12 @@
+/dist/
+/out/
+/node_modules/
+*.tgz
+*.lock
+pnpm-lock.yaml
+.idea
+.vscode
+*.d.ts
+!*.d.scss.ts
+!*.d.css.ts
+!src/vite-env.d.ts

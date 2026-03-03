@@ -1,0 +1,10 @@
+*.css
+*.html
+*.xml
+*.yaml
+*.yml
+*.js
+*.json
+*.jsonc
+*.ts
+*.tsx
