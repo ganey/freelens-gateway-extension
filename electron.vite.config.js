@@ -14,7 +14,7 @@ export default defineConfig({
       rollupOptions: {
         output: {
           exports: "named",
-          preserveModules: (process.env.VITE_PRESERVE_MODULES ?? "true") === "true",
+          preserveModules: process.env.VITE_PRESERVE_MODULES === "true",
           preserveModulesRoot: "src/main",
         },
       },
@@ -54,7 +54,7 @@ export default defineConfig({
       rollupOptions: {
         output: {
           exports: "named",
-          preserveModules: (process.env.VITE_PRESERVE_MODULES ?? "true") === "true",
+          preserveModules: process.env.VITE_PRESERVE_MODULES === "true",
           preserveModulesRoot: "src/renderer",
         },
       },
