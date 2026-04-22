@@ -2,6 +2,10 @@
   "name": "freelens-gateway-extension",
   "version": "0.1.1",
   "description": "Freelens extension for Kubernetes Gateway API and NGINX Gateway Fabric resources",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ganey/freelens-gateway-extension.git"
+  },
   "main": "out/main/index.js",
   "renderer": "out/renderer/index.js",
   "files": ["out/**/*"],
