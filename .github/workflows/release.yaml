@@ -2,39 +2,53 @@ name: Release
 
 on:
   push:
-    tags: ["v*"]
+    tags:
+      - v*
+
+permissions:
+  contents: write
+  id-token: write
 
 jobs:
   release:
+    name: release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
+
+    env:
+      VITE_PRESERVE_MODULES: "false"
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+
+      - name: Set package version to match tag
+        run: npm version ${GITHUB_REF_NAME#v} --no-git-tag-version --allow-same-version
+
+      - name: Setup node
+        uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
-      - run: corepack enable
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
-      - name: Verify tag matches package.json version
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Publish npm packages
         run: |
-          PKG_VERSION="v$(node -p "require('./package.json').version")"
-          if [ "$PKG_VERSION" != "${{ github.ref_name }}" ]; then
-            echo "Tag ${{ github.ref_name }} does not match package.json version $PKG_VERSION"
-            exit 1
-          fi
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - run: pnpm pack
-      - name: Publish to npm
-        run: pnpm publish --no-git-checks --provenance --access public
-      - name: Create GitHub Release
+          case "${GITHUB_REF_NAME}" in
+            *-*) dist_tag=next;;
+            *) dist_tag=latest;;
+          esac
+          npm publish --tag ${dist_tag} --access public --provenance
+
+      - name: Pack packages for GitHub Release
+        run: npm pack
+
+      - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          generate_release_notes: true
-          files: "*.tgz"
+          fail_on_unmatched_files: true
+          files: |-
+            *.tgz
