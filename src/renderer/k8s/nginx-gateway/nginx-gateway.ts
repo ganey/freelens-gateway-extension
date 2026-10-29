@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import { lazy } from "../utils";
 
 export interface NginxGatewayLogging {
   level?: string;
@@ -49,8 +50,15 @@ export class NginxGateway extends Renderer.K8sApi.LensExtensionKubeObject<
 export class NginxGatewayApi extends Renderer.K8sApi.KubeApi<NginxGateway> {}
 export class NginxGatewayStore extends Renderer.K8sApi.KubeObjectStore<NginxGateway, NginxGatewayApi> {}
 
-export const nginxGatewayApi = new NginxGatewayApi({
-  objectConstructor: NginxGateway,
-});
+export const nginxGatewayApi: NginxGatewayApi = lazy(
+  () =>
+    new NginxGatewayApi({
+      objectConstructor: NginxGateway,
+    }),
+);
 
-export const nginxGatewayStore = new NginxGatewayStore(nginxGatewayApi);
+export const nginxGatewayStore: NginxGatewayStore = lazy(() => {
+  const store = new NginxGatewayStore(nginxGatewayApi);
+  Renderer.K8sApi.apiManager.registerStore(store);
+  return store;
+});

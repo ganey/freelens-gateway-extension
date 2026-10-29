@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import { lazy } from "../utils";
 
 export interface PolicyTargetRef {
   group: string;
@@ -80,8 +81,15 @@ export class UpstreamSettingsPolicyStore extends Renderer.K8sApi.KubeObjectStore
   UpstreamSettingsPolicyApi
 > {}
 
-export const upstreamSettingsPolicyApi = new UpstreamSettingsPolicyApi({
-  objectConstructor: UpstreamSettingsPolicy,
-});
+export const upstreamSettingsPolicyApi: UpstreamSettingsPolicyApi = lazy(
+  () =>
+    new UpstreamSettingsPolicyApi({
+      objectConstructor: UpstreamSettingsPolicy,
+    }),
+);
 
-export const upstreamSettingsPolicyStore = new UpstreamSettingsPolicyStore(upstreamSettingsPolicyApi);
+export const upstreamSettingsPolicyStore: UpstreamSettingsPolicyStore = lazy(() => {
+  const store = new UpstreamSettingsPolicyStore(upstreamSettingsPolicyApi);
+  Renderer.K8sApi.apiManager.registerStore(store);
+  return store;
+});

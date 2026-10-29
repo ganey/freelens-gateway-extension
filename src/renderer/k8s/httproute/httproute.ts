@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import { lazy } from "../utils";
 
 export interface HTTPRouteParentRef {
   group?: string;
@@ -125,8 +126,15 @@ export class HTTPRoute extends Renderer.K8sApi.LensExtensionKubeObject<
 export class HTTPRouteApi extends Renderer.K8sApi.KubeApi<HTTPRoute> {}
 export class HTTPRouteStore extends Renderer.K8sApi.KubeObjectStore<HTTPRoute, HTTPRouteApi> {}
 
-export const httpRouteApi = new HTTPRouteApi({
-  objectConstructor: HTTPRoute,
-});
+export const httpRouteApi: HTTPRouteApi = lazy(
+  () =>
+    new HTTPRouteApi({
+      objectConstructor: HTTPRoute,
+    }),
+);
 
-export const httpRouteStore = new HTTPRouteStore(httpRouteApi);
+export const httpRouteStore: HTTPRouteStore = lazy(() => {
+  const store = new HTTPRouteStore(httpRouteApi);
+  Renderer.K8sApi.apiManager.registerStore(store);
+  return store;
+});
