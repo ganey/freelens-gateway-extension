@@ -26,4 +26,3 @@ export function lazy<T extends object>(factory: () => T): T {
     },
   });
 }
-
