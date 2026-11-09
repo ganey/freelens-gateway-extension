@@ -1,13 +1,12 @@
 {
-  "extends": "@electron-toolkit/tsconfig/tsconfig.json",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node10",
+    "moduleResolution": "node",
     "strict": true,
     "jsx": "react-jsx",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -16,5 +15,6 @@
     "noEmit": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "out"]
 }

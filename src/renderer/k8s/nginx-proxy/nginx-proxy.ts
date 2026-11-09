@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import { lazy } from "../utils";
 
 export interface NginxProxyTelemetry {
   exporter?: {
@@ -73,8 +74,15 @@ export class NginxProxy extends Renderer.K8sApi.LensExtensionKubeObject<
 export class NginxProxyApi extends Renderer.K8sApi.KubeApi<NginxProxy> {}
 export class NginxProxyStore extends Renderer.K8sApi.KubeObjectStore<NginxProxy, NginxProxyApi> {}
 
-export const nginxProxyApi = new NginxProxyApi({
-  objectConstructor: NginxProxy,
-});
+export const nginxProxyApi: NginxProxyApi = lazy(
+  () =>
+    new NginxProxyApi({
+      objectConstructor: NginxProxy,
+    }),
+);
 
-export const nginxProxyStore = new NginxProxyStore(nginxProxyApi);
+export const nginxProxyStore: NginxProxyStore = lazy(() => {
+  const store = new NginxProxyStore(nginxProxyApi);
+  Renderer.K8sApi.apiManager.registerStore(store);
+  return store;
+});

@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import { lazy } from "../utils";
 
 export interface Snippet {
   context: string;
@@ -54,8 +55,15 @@ export class SnippetsFilter extends Renderer.K8sApi.LensExtensionKubeObject<
 export class SnippetsFilterApi extends Renderer.K8sApi.KubeApi<SnippetsFilter> {}
 export class SnippetsFilterStore extends Renderer.K8sApi.KubeObjectStore<SnippetsFilter, SnippetsFilterApi> {}
 
-export const snippetsFilterApi = new SnippetsFilterApi({
-  objectConstructor: SnippetsFilter,
-});
+export const snippetsFilterApi: SnippetsFilterApi = lazy(
+  () =>
+    new SnippetsFilterApi({
+      objectConstructor: SnippetsFilter,
+    }),
+);
 
-export const snippetsFilterStore = new SnippetsFilterStore(snippetsFilterApi);
+export const snippetsFilterStore: SnippetsFilterStore = lazy(() => {
+  const store = new SnippetsFilterStore(snippetsFilterApi);
+  Renderer.K8sApi.apiManager.registerStore(store);
+  return store;
+});

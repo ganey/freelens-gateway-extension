@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import { lazy } from "../utils";
 
 export interface PolicyTargetRef {
   group: string;
@@ -74,8 +75,15 @@ export class SnippetsPolicy extends Renderer.K8sApi.LensExtensionKubeObject<
 export class SnippetsPolicyApi extends Renderer.K8sApi.KubeApi<SnippetsPolicy> {}
 export class SnippetsPolicyStore extends Renderer.K8sApi.KubeObjectStore<SnippetsPolicy, SnippetsPolicyApi> {}
 
-export const snippetsPolicyApi = new SnippetsPolicyApi({
-  objectConstructor: SnippetsPolicy,
-});
+export const snippetsPolicyApi: SnippetsPolicyApi = lazy(
+  () =>
+    new SnippetsPolicyApi({
+      objectConstructor: SnippetsPolicy,
+    }),
+);
 
-export const snippetsPolicyStore = new SnippetsPolicyStore(snippetsPolicyApi);
+export const snippetsPolicyStore: SnippetsPolicyStore = lazy(() => {
+  const store = new SnippetsPolicyStore(snippetsPolicyApi);
+  Renderer.K8sApi.apiManager.registerStore(store);
+  return store;
+});

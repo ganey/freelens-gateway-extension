@@ -49,6 +49,7 @@ src/
     details/                    # Detail panel components per resource
     icons/                      # SVG icons for sidebar
     k8s/                        # KubeObject definitions per resource
+      utils.ts                  # Lazy proxy helper for KubeApi/KubeObjectStore singletons
       gateway/                  # Gateway kind
       httproute/                # HTTPRoute kind
       client-settings-policy/   # ClientSettingsPolicy kind
@@ -74,26 +75,32 @@ export class MyResource extends Renderer.K8sApi.LensExtensionKubeObject<...> {
 }
 export class MyResourceApi extends Renderer.K8sApi.KubeApi<MyResource> {}
 export class MyResourceStore extends Renderer.K8sApi.KubeObjectStore<MyResource, MyResourceApi> {}
+export const myResourceApi: MyResourceApi = lazy(() => new MyResourceApi({ objectConstructor: MyResource }));
+export const myResourceStore: MyResourceStore = lazy(() => {
+  const store = new MyResourceStore(myResourceApi);
+  Renderer.K8sApi.apiManager.registerStore(store);
+  return store;
+});
 ```
 
 ### Host-Provided Dependencies (externalized at build time)
 
-These are NOT bundled — they come from the Freelens host app via globals:
+These are NOT bundled — they come from the Freelens host app via `globalThis.FreelensExtensionApi`:
 
-- `@freelensapp/extensions` → `global.LensExtensions`
-- `react` → `global.React`
-- `react-dom` → `global.ReactDom`
-- `react-router-dom` → `global.ReactRouterDom`
-- `mobx` → `global.Mobx`
-- `mobx-react` → `global.MobxReact`
+- `@freelensapp/extensions` → `globalThis.FreelensExtensionApi`
+- `react` → `globalThis.FreelensExtensionApi.React`
+- `react-dom` → `globalThis.FreelensExtensionApi.ReactDom`
+- `react/jsx-runtime` → `globalThis.FreelensExtensionApi.ReactJsxRuntime`
+- `mobx` → `globalThis.FreelensExtensionApi.Mobx`
+- `mobx-react` → `globalThis.FreelensExtensionApi.MobxReact`
 
 ## Tech Stack
 
 - **TypeScript** with `jsx: "react-jsx"` (automatic runtime, no `import React` needed)
-- **React 17** (provided by Freelens host)
-- **MobX 6** with 2023-05 decorator syntax (`@observable accessor`)
-- **electron-vite** for building (NOT webpack)
-- **SCSS Modules** with camelCaseOnly convention and auto-generated `.d.scss.ts`
+- **React 19** (provided by Freelens host)
+- **MobX 7** with standard TC39 decorator syntax (`@observable accessor`)
+- **Vite** for building ESM bundles
+- **SCSS Modules** with camelCaseOnly convention
 - **pnpm** as package manager (via corepack)
 - **Node.js >= 22**
 - **Biome** for linting/formatting
@@ -103,26 +110,26 @@ These are NOT bundled — they come from the Freelens host app via globals:
 
 ```sh
 pnpm i                # Install dependencies
-pnpm build            # Type-check + build (outputs to out/)
+pnpm build            # Type-check + build (outputs to dist/)
 pnpm build:force      # Build without type-check
 pnpm pack:dev         # Bump prerelease + build + pack .tgz for testing
 pnpm type:check       # TypeScript type checking only
 pnpm lint:check       # Run biome + prettier checks
 pnpm lint:fix         # Auto-fix lint issues
-pnpm clean            # Remove out/
-pnpm clean:all        # Remove out/, node_modules/, .tgz, .d.scss.ts
+pnpm clean            # Remove dist/ and out/
+pnpm clean:all        # Remove dist/, out/, node_modules/, .tgz, .d.scss.ts
 ```
 
 ## Build Output
 
-- `out/main/index.js` — Main process entry (CJS)
-- `out/renderer/index.js` — Renderer process entry (CJS)
-- Only `out/**/*` is published
+- `dist/main.js` — Main process entry (ESM)
+- `dist/renderer.js` — Renderer process entry (ESM)
+- Only `dist/**/*` is published
 
 ## Key Conventions
 
 - All deps are `devDependencies` (host provides runtime deps)
-- Output format is CommonJS (required by Freelens 1.x)
+- Output format is ESM (`"type": "module"`, required by Freelens 2.x)
 - Default export from each entry point is the extension class
 - Use `KubeObjectListLayout` for resource list pages
 - Use `DrawerItem` components in detail panels

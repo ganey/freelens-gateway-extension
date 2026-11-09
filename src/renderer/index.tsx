@@ -173,62 +173,30 @@ export default class GatewayExtensionRenderer extends Renderer.LensExtension {
     },
   ];
 
-  kubeObjectDetailItems = [
-    {
-      kind: Gateway.kind,
-      apiVersions: Gateway.crd.apiVersions,
-      components: {
-        Details: (props: any) => <GatewayDetails {...props} />,
-      },
-    },
-    {
-      kind: HTTPRoute.kind,
-      apiVersions: HTTPRoute.crd.apiVersions,
-      components: {
-        Details: (props: any) => <HTTPRouteDetails {...props} />,
-      },
-    },
-    {
-      kind: ClientSettingsPolicy.kind,
-      apiVersions: ClientSettingsPolicy.crd.apiVersions,
-      components: {
-        Details: (props: any) => <ClientSettingsPolicyDetails {...props} />,
-      },
-    },
-    {
-      kind: NginxGateway.kind,
-      apiVersions: NginxGateway.crd.apiVersions,
-      components: {
-        Details: (props: any) => <NginxGatewayDetails {...props} />,
-      },
-    },
-    {
-      kind: NginxProxy.kind,
-      apiVersions: NginxProxy.crd.apiVersions,
-      components: {
-        Details: (props: any) => <NginxProxyDetails {...props} />,
-      },
-    },
-    {
-      kind: SnippetsFilter.kind,
-      apiVersions: SnippetsFilter.crd.apiVersions,
-      components: {
-        Details: (props: any) => <SnippetsFilterDetails {...props} />,
-      },
-    },
-    {
-      kind: SnippetsPolicy.kind,
-      apiVersions: SnippetsPolicy.crd.apiVersions,
-      components: {
-        Details: (props: any) => <SnippetsPolicyDetails {...props} />,
-      },
-    },
-    {
-      kind: UpstreamSettingsPolicy.kind,
-      apiVersions: UpstreamSettingsPolicy.crd.apiVersions,
-      components: {
-        Details: (props: any) => <UpstreamSettingsPolicyDetails {...props} />,
-      },
-    },
+  kubeObjectDetailItems: Renderer.LensExtension["kubeObjectDetailItems"] = [
+    Renderer.K8sApi.detailsFor(Gateway, {
+      Details: (props: any) => <GatewayDetails {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(HTTPRoute, {
+      Details: (props: any) => <HTTPRouteDetails {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ClientSettingsPolicy, {
+      Details: (props: any) => <ClientSettingsPolicyDetails {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(NginxGateway, {
+      Details: (props: any) => <NginxGatewayDetails {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(NginxProxy, {
+      Details: (props: any) => <NginxProxyDetails {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(SnippetsFilter, {
+      Details: (props: any) => <SnippetsFilterDetails {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(SnippetsPolicy, {
+      Details: (props: any) => <SnippetsPolicyDetails {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(UpstreamSettingsPolicy, {
+      Details: (props: any) => <UpstreamSettingsPolicyDetails {...props} />,
+    }),
   ];
 }

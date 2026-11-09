@@ -4,7 +4,10 @@
 *.yaml
 *.yml
 *.js
+*.mjs
 *.json
 *.jsonc
 *.ts
 *.tsx
+dist
+out

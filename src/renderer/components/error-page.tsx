@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, type JSX } from "react";
 import styles from "./error-page.module.scss";
 
 interface ErrorPageProps {

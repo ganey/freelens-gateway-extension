@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import { lazy } from "../utils";
 
 export interface GatewayListener {
   name: string;
@@ -112,8 +113,15 @@ export class Gateway extends Renderer.K8sApi.LensExtensionKubeObject<
 export class GatewayApi extends Renderer.K8sApi.KubeApi<Gateway> {}
 export class GatewayStore extends Renderer.K8sApi.KubeObjectStore<Gateway, GatewayApi> {}
 
-export const gatewayApi = new GatewayApi({
-  objectConstructor: Gateway,
-});
+export const gatewayApi: GatewayApi = lazy(
+  () =>
+    new GatewayApi({
+      objectConstructor: Gateway,
+    }),
+);
 
-export const gatewayStore = new GatewayStore(gatewayApi);
+export const gatewayStore: GatewayStore = lazy(() => {
+  const store = new GatewayStore(gatewayApi);
+  Renderer.K8sApi.apiManager.registerStore(store);
+  return store;
+});
